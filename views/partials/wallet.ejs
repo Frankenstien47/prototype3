@@ -1,0 +1,167 @@
+<style>
+    .container {
+        width: 100vw;
+        margin-left: 250px;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .wallet-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        min-width: 300px;
+        max-width: 400px;
+        width: 100%;
+        margin-left: 25vw;
+        margin-bottom: 10vh;
+        margin-top: 10vh;
+    }
+
+    h1 {
+        color: #2d3748;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+
+    .balance {
+        font-size: 2.5rem;
+        color: #2d3748;
+        font-weight: bold;
+        margin: 1rem 0;
+    }
+
+    .balance-label {
+        color: #718096;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .currency {
+        color: #48bb78;
+    }
+
+    .transactions-section {
+        margin-top: 2rem;
+        text-align: left;
+    }
+
+    .transactions-section h2 {
+        font-size: 1.2rem;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .transactions-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .transaction-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .transaction-description {
+        font-size: 0.9rem;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .transaction-date {
+        font-size: 0.8rem;
+        color: #718096;
+    }
+
+    .transaction-amount {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .transaction-amount.credit {
+        color: #48bb78;
+    }
+
+    .transaction-amount.debit {
+        color: #e53e3e;
+    }
+
+    .no-transactions {
+        text-align: center;
+        color: #718096;
+        padding: 2rem 0;
+    }
+
+
+    .transactions-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .transactions-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .transactions-list::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 3px;
+    }
+</style>
+
+
+
+<div class="content">
+    <div class="wallet-card">
+        <h1>Your Wallet Balance</h1>
+        <div class="balance-label">Available Balance</div>
+        <div class="balance">
+            <span class="currency">₹</span>
+            <%= walletBalance %>
+        </div>
+
+        <div class="transactions-section">
+            <h2>Recent Transactions</h2>
+            <div class="transactions-list">
+                <% if (transactions && transactions.length> 0) { %>
+                    <% transactions.forEach(transaction=> { %>
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <span class="transaction-description">
+                                    <%= transaction.description %>
+                                </span>
+                                <span class="transaction-date">
+                                    <%= transaction.createdAt.toLocaleDateString('en-IN', { day: '2-digit' ,
+                                        month: 'short' , year: 'numeric' , hour: '2-digit' , minute: '2-digit' }) %>
+                                </span>
+                            </div>
+                            <div class="transaction-amount <%= transaction.type %>">
+                                <%= transaction.type==='Credit' ? '+' : '-' %>₹<%= transaction.amount %>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="no-transactions">
+                                    No transactions to display
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

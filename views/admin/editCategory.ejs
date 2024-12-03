@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/stylesheets/editCategory.css">
+
+
+
+<div class="main-content">
+    <h1>Edit Category</h1>
+    <% if (error_msg) { %>
+        <div class="alert" style="color: red;">
+            <%= error_msg %>
+        </div>
+        <% } %>
+            <form action="/admin/categories/<%= category._id %>/edit" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="categoryName">Category Name</label>
+                    <input type="text" class="form-control" id="categoryName" name="name" value="<%= category.name %>"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryImage">Category Image</label>
+                    <div class="file-input-wrapper">
+                        <button type="button" class="file-input-button">
+                            <i class="fas fa-upload"></i> Choose File
+                        </button>
+                        <input type="file" class="form-control-file" id="categoryImage" name="image">
+                    </div>
+
+                    <div class="image-preview-container">
+                        <img src="/uploads/<%= category.image %>" alt="Category Image" class="img-thumbnail">
+                        <small class="form-text">Current image preview. Upload a new one to change.</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-success">Update Category</button>
+                    <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+</div>
+
+<script>
+
+    document.getElementById('categoryImage').addEventListener('change', function (e) {
+        const fileName = e.target.files[0]?.name || 'No file chosen';
+        const button = e.target.previousElementSibling;
+        button.innerHTML = `<i class="fas fa-upload"></i> ${fileName}`;
+    });
+</script>

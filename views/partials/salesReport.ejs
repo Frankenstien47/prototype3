@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+
+<head>
+
+    <title>Sales Report</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .content {
+            margin-left: 3%;
+            width: 100%;
+            margin-bottom: 7vh;
+            margin-top: 4vh;
+            min-height: 50vh;
+
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin: 2rem 0 1rem;
+            font-size: 1.5rem;
+        }
+
+        .form-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        input[type="date"] {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card p {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .summary-card .label {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            color: var(--text-color);
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .download-link:hover {
+            background-color: var(--background-color);
+            border-color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--background-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<div class="content">
+    <div class="container">
+        <h1>Sales Report</h1>
+
+        <div class="form-container">
+            <form method="GET" action="/admin/sales-report" class="form-group">
+                <div>
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" value="<%= startDate %>">
+                </div>
+
+                <div>
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" value="<%= endDate %>">
+                </div>
+
+                <div>
+                    <label for="reportType">Report Type:</label>
+                    <select id="reportType" name="reportType">
+                        <option value="daily" <%=reportType==='daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%=reportType==='weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%=reportType==='monthly' ? 'selected' : '' %>>Monthly</option>
+                    </select>
+                </div>
+
+                <button type="submit">Generate Report</button>
+            </form>
+        </div>
+
+
+        <h2>Report Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Total Sales Count</div>
+                <p>
+                    <%= report.totalSalesCount %>
+                </p>
+            </div>
+            <div class="summary-card">
+                <div class="label">Total Order Amount</div>
+                <p>₹<%= report.totalOrderAmount.toFixed(2) %>
+                </p>
+            </div>
+            <div class="summary-card">
+                <div class="label">Total Discount</div>
+                <p>₹<%= report.totalDiscount.toFixed(2) %>
+                </p>
+            </div>
+            <div class="summary-card">
+                <div class="label">Net Sales</div>
+                <p>₹<%= report.netSales.toFixed(2) %>
+                </p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/admin/sales-report/pdf?startDate=<%= startDate %>&endDate=<%= endDate %>" class="download-link">
+                Download PDF
+            </a>
+            <a href="/admin/sales-report/excel?startDate=<%= startDate %>&endDate=<%= endDate %>" class="download-link">
+                Download Excel
+            </a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <%= reportType==='monthly' ? 'Month' : reportType==='weekly' ? 'Week' : 'Date' %>
+                    </th>
+                    <th>Subtotal</th>
+                    <th>Discount</th>
+                    <th>Final Amount</th>
+                    <th>Order Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% orders.forEach(order=> { %>
+                    <tr>
+                        <td>
+                            <% if (reportType==='monthly' ) { %>
+                                <%= moment(order.createdAt).format('MMMM YYYY') %>
+                                    <% } else if (reportType==='weekly' ) { %>
+                                        <%= moment(order.createdAt).format('YYYY-[Week] WW') %>
+                                            <% } else { %>
+                                                <%= order.createdAt.toISOString().slice(0, 10) %>
+                                                    <% } %>
+                        </td>
+                        <td>₹<%= order.subtotal.toFixed(2) %>
+                        </td>
+                        <td>₹<%= order.discountAmount.toFixed(2) %>
+                        </td>
+                        <td>₹<%= order.finalAmount.toFixed(2) %>
+                        </td>
+                        <td>
+                            <%= order.orderCount || 1 %>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

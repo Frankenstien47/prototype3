@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Offer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .offer-form {
+            display: none;
+        }
+
+        .active-form {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>Edit Offer</h1>
+
+        <% if (message) { %>
+            <div class="alert alert-<%= message.includes('Error') ? 'danger' : 'success' %>">
+                <%= message %>
+            </div>
+            <% } %>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form action="/admin/offers/update/<%= offer._id %>" method="POST">
+                            <input type="hidden" name="type" value="<%= offer.type %>">
+
+                            <div class="form-group">
+                                <label>Offer Name:</label>
+                                <input type="text" name="name" class="form-control" required value="<%= offer.name %>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Discount Type:</label>
+                                <select name="discountType" class="form-control" required
+                                    onchange="toggleMaxDiscount()">
+                                    <option value="PERCENTAGE" <%=offer.discountType==='PERCENTAGE' ? 'selected' : '' %>
+                                        >Percentage</option>
+                                    <option value="FLAT" <%=offer.discountType==='FLAT' ? 'selected' : '' %>>Flat Amount
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Discount Value:</label>
+                                <input type="number" name="discountValue" class="form-control" required min="0"
+                                    value="<%= offer.discountValue %>">
+                            </div>
+
+                            <div class="form-group" id="maxDiscountDiv">
+                                <label>Maximum Discount Amount:</label>
+                                <input type="number" name="maxDiscountAmount" class="form-control" min="0"
+                                    value="<%= offer.maxDiscountAmount %>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Minimum Product Price:</label>
+                                <input type="number" name="minProductPrice" class="form-control" min="0"
+                                    value="<%= offer.minPurchaseAmount %>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Start Date:</label>
+                                <input type="datetime-local" name="startDate" class="form-control" required
+                                    value="<%= new Date(offer.startDate).toISOString().slice(0, 16) %>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>End Date:</label>
+                                <input type="datetime-local" name="endDate" class="form-control" required
+                                    value="<%= new Date(offer.endDate).toISOString().slice(0, 16) %>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Usage Limit (0 for unlimited):</label>
+                                <input type="number" name="usageLimit" class="form-control" min="0"
+                                    value="<%= offer.usageLimit %>">
+                            </div>
+
+                            <% if (offer.type==='CATEGORY' ) { %>
+                                <div class="form-group">
+                                    <label>Category:</label>
+                                    <select name="categoryId" class="form-control" required>
+                                        <% categories.forEach(function(category) { %>
+                                            <option value="<%= category._id %>" <%=offer.categoryId &&
+                                                offer.categoryId.equals(category._id) ? 'selected' : '' %>>
+                                                <%= category.name %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                </div>
+                                <% } %>
+
+                                    <% if (offer.type==='PRODUCT' ) { %>
+                                        <div class="form-group">
+                                            <label>Product:</label>
+                                            <select name="productId" class="form-control" required>
+                                                <% products.forEach(function(product) { %>
+                                                    <option value="<%= product._id %>" <%=offer.productId &&
+                                                        offer.productId.equals(product._id) ? 'selected' : '' %>>
+                                                        <%= product.productName %>
+                                                    </option>
+                                                    <% }); %>
+                                            </select>
+                                        </div>
+                                        <% } %>
+
+                                            <% if (offer.type==='REFERRAL' ) { %>
+                                                <div class="form-group">
+                                                    <label>Referrer Bonus:</label>
+                                                    <input type="number" name="referralDetails.referrerBonus"
+                                                        class="form-control" min="0"
+                                                        value="<%= offer.referralDetails.referrerBonus %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Referee Bonus:</label>
+                                                    <input type="number" name="referralDetails.refereeBonus"
+                                                        class="form-control" min="0"
+                                                        value="<%= offer.referralDetails.refereeBonus %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Maximum Referrals:</label>
+                                                    <input type="number" name="referralDetails.maxReferrals"
+                                                        class="form-control" min="1"
+                                                        value="<%= offer.referralDetails.maxReferrals %>" required>
+                                                </div>
+                                                <% } %>
+
+                                                    <div class="form-group">
+                                                        <button type="submit" class="btn btn-primary">Update
+                                                            Offer</button>
+                                                        <a href="/admin/offers/manage"
+                                                            class="btn btn-secondary">Cancel</a>
+                                                    </div>
+                        </form>
+                    </div>
+                </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMaxDiscount() {
+            const discountType = document.querySelector('[name="discountType"]').value;
+            const maxDiscountDiv = document.getElementById('maxDiscountDiv');
+            const maxDiscountInput = document.querySelector('[name="maxDiscountAmount"]');
+
+            if (discountType === 'PERCENTAGE') {
+                maxDiscountDiv.style.display = 'block';
+                maxDiscountInput.setAttribute('required', '');
+            } else {
+                maxDiscountDiv.style.display = 'none';
+                maxDiscountInput.removeAttribute('required');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleMaxDiscount();
+        });
+    </script>
+</body>
+
+</html>

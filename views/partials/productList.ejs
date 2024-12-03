@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/productList.css">
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card filter-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Search Field -->
+                            <div class="col-12 mb-3">
+                                <div class="search-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" class="form-control search-input" id="searchInput"
+                                        placeholder="Search products..." value="<%= searchQuery || '' %>">
+                                </div>
+                            </div>
+                            <!-- Filters Section -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card filter-card">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-wrap gap-3 align-items-center">
+                                                <div class="me-3">
+                                                    <label class="form-label mb-0">
+                                                        <i class="fas fa-filter me-2"></i>Filters:
+                                                    </label>
+                                                </div>
+                                                <select class="form-select w-auto" id="sortSelect">
+                                                    <option value="">Sort By</option>
+                                                    <option value="name_asc">Name (A to Z)</option>
+                                                    <option value="name_desc">Name (Z to A)</option>
+                                                    <option value="price_asc">Price (Low to High)</option>
+                                                    <option value="price_desc">Price (High to Low)</option>
+                                                </select>
+
+                                                <select class="form-select w-auto" id="categorySelect">
+                                                    <option value="">All Categories</option>
+                                                    <% categories.forEach(function(category) { %>
+                                                        <option value="<%= category._id %>"
+                                                            <%=selectedCategory===category._id.toString() ? 'selected'
+                                                            : '' %>>
+                                                            <%= category.name %>
+                                                        </option>
+                                                        <% }); %>
+                                                </select>
+
+                                                <button class="btn btn-outline-secondary" id="clearFilters">
+                                                    <i class="fas fa-undo me-2"></i>Clear Filters
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products Grid -->
+                            <div class="row" id="productsContainer">
+                                <% if (products.length===0) { %>
+                                    <div class="no-products-found">
+                                        <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
+                                        <h3>No Products Found</h3>
+                                        <p class="text-muted">Try adjusting your filters or check back later for new
+                                            products.</p>
+                                    </div>
+                                    <% } else { %>
+                                        <% products.forEach(function(product) { %>
+                                            <div class="col-md-3 product-card">
+                                                <div class="card h-100">
+                                                    <div class="position-relative">
+                                                        <a href="/user/productList/<%= product._id %>">
+                                                            <img src="<%= product.images[0] %>"
+                                                                class="card-img-top product-image"
+                                                                alt="<%= product.productName %>">
+                                                            <% if (product.stock===0) { %>
+                                                                <div class="out-of-stock-overlay">
+                                                                    <span class="badge bg-danger">Out of Stock</span>
+                                                                </div>
+                                                                <% } %>
+                                                        </a>
+                                                        <div class="heart-icon"
+                                                            onclick="toggleWishlist(this, '<%= product._id %>')"
+                                                            data-product-id="<%= product._id %>">
+                                                            <i class="fa-regular fa-heart"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h5 class="card-title">
+                                                            <%= product.productName %>
+                                                        </h5>
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-2">
+                                                            <span class="badge bg-secondary variant-badge">
+                                                                <%= product.variant %>
+                                                            </span>
+                                                            <div class="price-container">
+                                                                <% if (product.offerPrice) { %>
+                                                                    <div class="price-right-container">
+                                                                        <% const savings=((product.price -
+                                                                            product.offerPrice) / product.price *
+                                                                            100).toFixed(0) %>
+                                                                            <span class="savings-badge">
+                                                                                <%= savings %>% OFF
+                                                                            </span>
+                                                                            <div class="price-stack">
+                                                                                <span class="offer-price">₹<%=
+                                                                                        product.offerPrice.toLocaleString()
+                                                                                        %></span>
+                                                                                <span class="original-price">₹<%=
+                                                                                        product.price.toLocaleString()
+                                                                                        %></span>
+                                                                            </div>
+                                                                    </div>
+                                                                    <% } else { %>
+                                                                        <span class="price">₹<%=
+                                                                                product.price.toLocaleString() %></span>
+                                                                        <% } %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-auto">
+                                                            <div class="d-flex justify-content-between gap-2">
+                                                                <!-- <button class="btn btn-outline-dark btn-sm flex-grow-1"
+                                                                    onclick="buyNow('<%= product._id %>')"
+                                                                    <%=product.stock===0 ? 'disabled' : '' %>>
+                                                                    Buy Now
+                                                                </button> -->
+                                                                <button class="btn btn-outline-dark btn-sm w-100"
+                                                                    onclick="addToCart('<%= product._id %>')"
+                                                                    <%=product.stock===0 ? 'disabled' : '' %>>
+                                                                    Add to Cart
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                                <% } %>
+                            </div>
+
+                            <!-- Loading Spinner -->
+                            <!-- <div class="loading-spinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div> -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mt-4">
+                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                            <a class="page-link"
+                                                href="?page=<%= i %>&sort=<%= currentSort %>&category=<%= selectedCategory %>&search=<%= searchQuery %>">
+                                                <%= i %>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                </ul>
+                            </nav>
+
+                            <script
+                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                            <script
+                                src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
+                            <script>
+
+
+
+                                async function toggleWishlist(element, productId) {
+                                    try {
+                                        const response = await fetch('/user/wishlist/toggle', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({ productId })
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                            element.classList.toggle('active');
+                                            const icon = element.querySelector('i');
+                                            if (element.classList.contains('active')) {
+                                                icon.classList.remove('fa-regular');
+                                                icon.classList.add('fa-solid');
+                                            } else {
+                                                icon.classList.remove('fa-solid');
+                                                icon.classList.add('fa-regular');
+                                            }
+
+                                            swal({
+                                                title: "Success!",
+                                                text: data.message,
+                                                icon: "success",
+                                                button: "OK",
+                                            });
+                                        } else {
+                                            throw new Error(data.message);
+                                        }
+                                    } catch (error) {
+                                        swal({
+                                            title: "Error!",
+                                            text: error.message || "Something went wrong!",
+                                            icon: "error",
+                                            button: "OK",
+                                        });
+                                    }
+                                }
+
+
+                                async function addToCart(productId) {
+                                    try {
+                                        const response = await fetch('/user/cart/add', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                                productId,
+                                                quantity: 1
+                                            })
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                            swal({
+                                                title: "Success!",
+                                                text: "Product added to cart successfully!",
+                                                icon: "success",
+                                                button: "OK",
+                                            });
+                                        } else {
+                                            throw new Error(data.message);
+                                        }
+                                    } catch (error) {
+                                        swal({
+                                            title: "Error!",
+                                            text: error.message || "Failed to add product to cart",
+                                            icon: "error",
+                                            button: "OK",
+                                        });
+                                    }
+                                }
+
+                                async function toggleWishlist(element, productId) {
+                                    try {
+                                        const response = await fetch('/user/wishlist/toggle', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({ productId })
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (response.ok) {
+                                            element.classList.toggle('active');
+                                            const icon = element.querySelector('i');
+                                            if (element.classList.contains('active')) {
+                                                icon.classList.remove('fa-regular');
+                                                icon.classList.add('fa-solid');
+                                            } else {
+                                                icon.classList.remove('fa-solid');
+                                                icon.classList.add('fa-regular');
+                                            }
+
+                                            swal({
+                                                title: "Success!",
+                                                text: data.message,
+                                                icon: "success",
+                                                button: "OK",
+                                            });
+                                        } else {
+                                            throw new Error(data.message);
+                                        }
+                                    } catch (error) {
+                                        swal({
+                                            title: "Error!",
+                                            text: error.message || "Something went wrong!",
+                                            icon: "error",
+                                            button: "OK",
+                                        });
+                                    }
+                                }
+
+
+                                // Handle filters
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const sortSelect = document.getElementById('sortSelect');
+                                    const categorySelect = document.getElementById('categorySelect');
+                                    const clearFiltersBtn = document.getElementById('clearFilters');
+                                    const searchInput = document.getElementById('searchInput')
+                                    let searchTimeout;
+
+                                    function updateFilters() {
+
+                                        const url = new URL(window.location.href);
+
+                                        const sortValue = sortSelect.value;
+                                        const categoryValue = categorySelect.value;
+                                        const searchValue = searchInput.value.trim();
+
+                                        if (sortValue) url.searchParams.set('sort', sortValue);
+                                        else url.searchParams.delete('sort');
+
+                                        if (categoryValue) url.searchParams.set('category', categoryValue);
+                                        else url.searchParams.delete('category');
+
+                                        if (searchValue) url.searchParams.set('search', searchValue);
+                                        else url.searchParams.delete('search')
+
+                                        window.location.href = url.toString();
+                                    }
+                                    searchInput.addEventListener('Input', (e) => {
+                                        clearTimeout(searchTimeout);
+                                        searchTimeout = setTimeout(updateFilters, 500)
+
+                                    })
+
+                                    searchInput.addEventListener('keydown', (e) => {
+                                        if (e.key === 'Enter') {
+                                            clearTimeout(searchTimeout)
+                                            updateFilters();
+                                        }
+                                    })
+
+
+                                    // Set initial values from URL
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    if (urlParams.get('sort')) sortSelect.value = urlParams.get('sort');
+                                    if (urlParams.get('category')) categorySelect.value = urlParams.get('category');
+                                    if (urlParams.get('search')) searchInput.value = urlParams.get('search')
+
+                                    // Add event listeners
+                                    sortSelect.addEventListener('change', updateFilters);
+                                    categorySelect.addEventListener('change', updateFilters);
+                                    clearFiltersBtn.addEventListener('click', () => {
+                                        sortSelect.value = '';
+                                        categorySelect.value = '';
+                                        searchInput.value = '';
+                                        updateFilters();
+
+                                    });
+                                });
+                            </script>
+
+</body>
+
+</html>

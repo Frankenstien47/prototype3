@@ -1,0 +1,292 @@
+<link rel="stylesheet" href="/stylesheets/productList.css">
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card filter-card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Search Field -->
+                        <div class="col-12 mb-3">
+                            <div class="search-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="form-control search-input" id="searchInput"
+                                    placeholder="Search wishlist items..." value="<%= searchQuery || '' %>">
+                            </div>
+                        </div>
+                        <!-- Filters Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card filter-card">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-wrap gap-3 align-items-center">
+                                            <div class="me-3">
+                                                <label class="form-label mb-0">
+                                                    <i class="fas fa-filter me-2"></i>Filters:
+                                                </label>
+                                            </div>
+                                            <select class="form-select w-auto" id="sortSelect">
+                                                <option value="">Sort By</option>
+                                                <option value="name_asc" <%=currentSort==='name_asc' ? 'selected' : ''
+                                                    %>>Name (A to Z)</option>
+                                                <option value="name_desc" <%=currentSort==='name_desc' ? 'selected' : ''
+                                                    %>>Name (Z to A)</option>
+                                                <option value="price_asc" <%=currentSort==='price_asc' ? 'selected' : ''
+                                                    %>>Price (Low to High)</option>
+                                                <option value="price_desc" <%=currentSort==='price_desc' ? 'selected'
+                                                    : '' %>>Price (High to Low)</option>
+                                            </select>
+
+                                            <select class="form-select w-auto" id="categorySelect">
+                                                <option value="">All Categories</option>
+                                                <% categories.forEach(function(category) { %>
+                                                    <option value="<%= category._id %>"
+                                                        <%=selectedCategory===category._id.toString() ? 'selected' : ''
+                                                        %>>
+                                                        <%= category.name %>
+                                                    </option>
+                                                    <% }); %>
+                                            </select>
+
+                                            <button class="btn btn-outline-secondary" id="clearFilters">
+                                                <i class="fas fa-undo me-2"></i>Clear Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="row" id="productsContainer">
+                            <% if (products.length===0) { %>
+                                <div class="col-12 text-center py-5">
+                                    <div class="no-products-found">
+                                        <i class="fas fa-heart-broken fa-3x mb-3 text-muted"></i>
+                                        <h3>Your Wishlist is Empty</h3>
+                                        <p class="text-muted">Browse our products and add items to your wishlist!</p>
+                                        <a href="/user/productList" class="btn btn-primary mt-3">
+                                            <i class="fas fa-shopping-bag me-2"></i>Browse Products
+                                        </a>
+                                    </div>
+                                </div>
+                                <% } else { %>
+                                    <% products.forEach(function(product) { %>
+                                        <div class="col-md-3 product-card">
+                                            <div class="card h-100">
+                                                <div class="position-relative">
+                                                    <a href="/user/productList/<%= product._id %>">
+                                                        <img src="<%= product.images[0] %>"
+                                                            class="card-img-top product-image"
+                                                            alt="<%= product.productName %>">
+                                                        <% if (product.stock===0) { %>
+                                                            <div class="out-of-stock-overlay">
+                                                                <span class="badge bg-danger">Out of Stock</span>
+                                                            </div>
+                                                            <% } %>
+                                                    </a>
+                                                    <div class="heart-icon active"
+                                                        onclick="toggleWishlist(this, '<%= product._id %>')"
+                                                        data-product-id="<%= product._id %>">
+                                                        <i class="fa-solid fa-heart"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title">
+                                                        <%= product.productName %>
+                                                    </h5>
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="badge bg-secondary variant-badge">
+                                                            <%= product.variant %>
+                                                        </span>
+                                                        <div class="price-container">
+                                                            <% if (product.offerPrice) { %>
+                                                                <div class="price-right-container">
+                                                                    <% const savings=((product.price -
+                                                                        product.offerPrice) / product.price *
+                                                                        100).toFixed(0) %>
+                                                                        <span class="savings-badge">
+                                                                            <%= savings %>% OFF
+                                                                        </span>
+                                                                        <div class="price-stack">
+                                                                            <span class="offer-price">₹<%=
+                                                                                    product.offerPrice.toLocaleString()
+                                                                                    %></span>
+                                                                            <span class="original-price">₹<%=
+                                                                                    product.price.toLocaleString() %>
+                                                                            </span>
+                                                                        </div>
+                                                                </div>
+                                                                <% } else { %>
+                                                                    <span class="price">₹<%=
+                                                                            product.price.toLocaleString() %></span>
+                                                                    <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-auto">
+                                                        <button class="btn btn-outline-dark btn-sm  w-100"
+                                                            onclick="addToCart('<%= product._id %>')"
+                                                            <%=product.stock===0 ? 'disabled' : '' %>>
+                                                            Add to Cart
+                                                            <i class="fa-solid fa-cart-plus ms-2"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                            <% } %>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sortSelect = document.getElementById('sortSelect');
+        const categorySelect = document.getElementById('categorySelect');
+        const clearFiltersBtn = document.getElementById('clearFilters');
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+
+        function showLoading() {
+            document.querySelector('.loading-spinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+
+        function updateFilters() {
+            showLoading();
+            const url = new URL(window.location.href);
+
+            const sortValue = sortSelect.value;
+            const categoryValue = categorySelect.value;
+            const searchValue = searchInput.value.trim();
+
+            if (sortValue) url.searchParams.set('sort', sortValue);
+            else url.searchParams.delete('sort');
+
+            if (categoryValue) url.searchParams.set('category', categoryValue);
+            else url.searchParams.delete('category');
+
+            if (searchValue) url.searchParams.set('search', searchValue);
+            else url.searchParams.delete('search');
+
+            window.location.href = url.toString();
+        }
+
+        // Search input handler with debounce
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(updateFilters, 500);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
+                updateFilters();
+            }
+        });
+
+        // Filter change handlers
+        sortSelect.addEventListener('change', updateFilters);
+        categorySelect.addEventListener('change', updateFilters);
+
+        clearFiltersBtn.addEventListener('click', () => {
+            sortSelect.value = '';
+            categorySelect.value = '';
+            searchInput.value = '';
+            updateFilters();
+        });
+    });
+
+    async function toggleWishlist(element, productId) {
+        try {
+            const response = await fetch('/user/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Remove the product card from the wishlist view
+                const productCard = element.closest('.product-card');
+                productCard.remove();
+
+                // Check if there are no more products
+                const productsContainer = document.getElementById('productsContainer');
+                if (productsContainer.children.length === 0) {
+                    location.reload(); // Reload to show empty state
+                }
+
+                swal({
+                    title: "Success!",
+                    text: data.message,
+                    icon: "success",
+                    button: "OK",
+                });
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            swal({
+                title: "Error!",
+                text: error.message || "Something went wrong!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+
+    async function addToCart(productId) {
+        try {
+            const response = await fetch('/user/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId,
+                    quantity: 1
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                swal({
+                    title: "Success!",
+                    text: "Product added to cart successfully!",
+                    icon: "success",
+                    button: "OK",
+                });
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            swal({
+                title: "Error!",
+                text: error.message || "Failed to add product to cart",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+
+</script>

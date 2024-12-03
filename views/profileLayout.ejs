@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="icon" href="/images/Favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&family=Manrope:wght@200..800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/layoutStyle.css">
+    <style>
+        /* Custom styles for sidebar */
+        #sidebar {
+            min-width: 220px;
+            margin-left: 10px;
+
+            height: 50vh;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            z-index: 999;
+            margin-top: 10vh;
+            transition: all 0.3s;
+            border-radius: 20px;
+            box-shadow: 14px 18px 16px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        #sidebar.active {
+            left: 0;
+        }
+
+        #content {
+            width: 100%;
+            padding: 20px;
+
+            transition: all 0.3s;
+        }
+
+        @media (min-width: 768px) {
+            #sidebar {
+                left: 0;
+            }
+
+            #content {
+                margin-left: 150px;
+            }
+        }
+
+        #sidebarCollapse {
+            display: none;
+        }
+
+        @media (max-width: 767px) {
+            #sidebarCollapse {
+                display: block;
+            }
+        }
+
+        /* Custom styles for active nav item */
+        .nav-link.active {
+            background-color: rgb(22, 22, 22) !important;
+
+            color: white !important;
+
+            font-weight: bold;
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Include Header Partial -->
+    <%- include('partials/nav2') %>
+
+        <div class="wrapper">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="bg-light">
+                <div class="position-sticky">
+                    <div class="sidebar-logo text-center py-3">
+                        <!-- <img src="/images/logo.svg" alt="Logo" class="img-fluid" style="max-width: 150px;"> -->
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>" href="/user/profile">
+                                Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPage === 'orders' ? 'active' : '' %>" href="/user/orders">
+                                My Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPage === 'address-book' ? 'active' : '' %>"
+                                href="/user/address">
+                                Address Book
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPage === 'coupons' ? 'active' : '' %>"
+                                href="/user/couponList">
+                                Coupons
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= currentPage === 'wallet' ? 'active' : '' %>" href="/user/wallet">
+                                My Wallet
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Page Content -->
+            <div id="content">
+                <button type="button" id="sidebarCollapse" class="btn btn-info">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Include Profile Navigation Partial -->
+
+                <!-- Main Content -->
+                <%- include(content) %>
+            </div>
+        </div>
+
+        <!-- Include Footer Partial -->
+        <%- include('partials/footer') %>
+
+            <!-- Add Bootstrap JS and jQuery -->
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+            <script>
+                $(document).ready(function () {
+                    $('#sidebarCollapse').on('click', function () {
+                        $('#sidebar').toggleClass('active');
+                    });
+
+                    $('.nav-link').on('click', function () {
+                        $('.nav-link').removeClass('active');
+                        $(this).addClass('active');
+                    });
+                });
+            </script>
+</body>
+
+</html>

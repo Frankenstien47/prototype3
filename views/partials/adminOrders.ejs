@@ -1,0 +1,354 @@
+<link rel="stylesheet" href="/stylesheets/adminOrders.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css" rel="stylesheet">
+
+<div class="content">
+    <div class="container">
+        <div class="header">
+            <h1>Order Management</h1>
+            <span class="total-orders">Total Orders: <%= orders.length %></span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Payment</th>
+                        <th>Order Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order=> { %>
+                        <tr>
+                            <td>#<%= order._id %>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <span class="customer-name">
+                                        <%= order.userId.name %>
+                                    </span>
+                                    <span class="customer-email">
+                                        <%= order.userId.email %>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="item-list">
+                                    <% order.items.forEach(item=> { %>
+                                        <div class="item-row">
+                                            <div class="item-details">
+                                                <span class="item-name">
+                                                    <%= item.productId.productName %> × <%= item.quantity %> - ₹<%=
+                                                                order.finalAmount %>
+                                                </span>
+                                                <div class="item-status-control">
+                                                    <select class="item-status-select" data-order-id="<%= order._id %>"
+                                                        data-item-id="<%= item._id %>"
+                                                        <%=order.orderStatus==='Cancelled' ? 'disabled' : '' %>>
+                                                        <option value="Processing" <%=item.status==='Processing'
+                                                            ? 'selected' : '' %>>Processing</option>
+                                                        <option value="Shipped" <%=item.status==='Shipped' ? 'selected'
+                                                            : '' %>>Shipped</option>
+                                                        <option value="Delivered" <%=item.status==='Delivered'
+                                                            ? 'selected' : '' %>>Delivered</option>
+                                                        <option value="Return Requested"
+                                                            <%=item.status==='Return Requested' ? 'selected' : '' %>
+                                                            >Return Requested</option>
+                                                        <option value="Returned" <%=item.status==='Returned'
+                                                            ? 'selected' : '' %>>Returned</option>
+                                                        <option value="Cancelled" <%=item.status==='Cancelled'
+                                                            ? 'selected' : '' %>>Cancelled</option>
+                                                    </select>
+                                                    <span
+                                                        class="status-badge status-<%= item.status.toLowerCase().replace(' ', '-') %>">
+                                                        <%= item.status %>
+                                                    </span>
+
+                                                    <% if (item.status==='Return Requested' && item.returnRequest) { %>
+                                                        <button class="btn btn-return-action"
+                                                            onclick="showReturnRequestDetails('<%= order._id %>', '<%= item._id %>', `<%= item.returnRequest.reason %>`)">
+                                                            View Return Request
+                                                        </button>
+                                                        <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="payment-info">
+                                    <span class="total-amount">₹<%= order.finalAmount %></span>
+                                    <span class="payment-method">
+                                        <%= order.paymentMethod %>
+                                    </span>
+                                    <span class="payment-status">
+                                        <%= order.paymentStatus %>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-<%= order.orderStatus.toLowerCase() %>">
+                                    <%= order.orderStatus %>
+                                </span>
+                            </td>
+                            <td class="action-cell">
+                                <form class="status-form" action="/admin/orders/<%= order._id %>/status" method="POST">
+                                    <select name="orderStatus" class="status-select" <%=order.orderStatus==='Cancelled'
+                                        ? 'disabled' : '' %>>
+                                        <option value="Processing" <%=order.orderStatus==='Processing' ? 'selected' : ''
+                                            %>>Processing
+                                        </option>
+                                        <option value="Shipped" <%=order.orderStatus==='Shipped' ? 'selected' : '' %>
+                                            >Shipped</option>
+                                        <option value="Delivered" <%=order.orderStatus==='Delivered' ? 'selected' : ''
+                                            %>>Delivered</option>
+                                        <option value="Cancelled" <%=order.orderStatus==='Cancelled' ? 'selected' : ''
+                                            %>>Cancelled</option>
+                                        <option value="Returned" <%=order.orderStatus==='Returned' ? 'selected' : '' %>
+                                            >Returned</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-update">Update All Items</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .item-status-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .item-status-select {
+        padding: 4px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: 500;
+    }
+
+    .status-processing {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-shipped {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-delivered {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-returned {
+        background-color: #f3e8ff;
+        color: #6b21a8;
+    }
+
+    .item-row {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item-row:last-child {
+        border-bottom: none;
+    }
+
+    .item-details {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle individual item status updates
+        document.querySelectorAll('.item-status-select').forEach(select => {
+            select.addEventListener('change', function () {
+                const orderId = this.dataset.orderId;
+                const itemId = this.dataset.itemId;
+                const newStatus = this.value;
+
+                Swal.fire({
+                    title: 'Update Item Status',
+                    text: `Are you sure you want to update this item's status to ${newStatus}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, update it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/admin/orders/${orderId}/items/${itemId}/status`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ status: newStatus })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message,
+                                        icon: 'error'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to update item status',
+                                    icon: 'error'
+                                });
+                            });
+                    } else {
+                        // Reset select to previous value if cancelled
+                        this.value = this.querySelector('option[selected]').value;
+                    }
+                });
+            });
+        });
+
+        // Handle mass status update form
+        document.querySelectorAll('.status-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const newStatus = formData.get('orderStatus');
+
+                Swal.fire({
+                    title: 'Update All Items',
+                    text: `Are you sure you want to update all items in this order to ${newStatus}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, update all!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+
+        // Show server messages if they exist
+        const serverMessages = {
+            success: '<%= messages?.success || "" %>',
+            error: '<%= messages?.error || "" %>'
+        };
+
+        if (serverMessages.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: serverMessages.success,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        if (serverMessages.error) {
+            Swal.fire({
+                title: 'Error!',
+                text: serverMessages.error,
+                icon: 'error'
+            });
+        }
+    });
+
+    function showReturnRequestDetails(orderId, itemId, reason) {
+        Swal.fire({
+            title: 'Return Request Details',
+            html: `
+                <div class="return-details">
+                    <h3>Customer's Reason:</h3>
+                    <div class="return-reason">${reason}</div>
+                </div>
+            `,
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: 'Approve Return',
+            denyButtonText: 'Reject Return',
+            cancelButtonText: 'Close',
+            confirmButtonColor: '#059669',
+            denyButtonColor: '#dc2626'
+        }).then((result) => {
+            if (result.isConfirmed || result.isDenied) {
+                handleReturnRequest(orderId, itemId, result.isConfirmed ? 'approve' : 'reject');
+            }
+        });
+    }
+
+    function handleReturnRequest(orderId, itemId, action) {
+        fetch(`/admin/orders/${orderId}/items/${itemId}/return-${action}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: `Return request ${action}ed successfully`,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message || `Failed to ${action} return request`,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Something went wrong while processing the return request',
+                    icon: 'error'
+                });
+            });
+    }
+</script>

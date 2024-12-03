@@ -1,0 +1,245 @@
+<link rel="stylesheet" href="/stylesheets/home.css">
+<!-- section1 -->
+<div class="Whole">
+    <div class="section1">
+
+
+        <div class="description1">
+            <h1>Welcome Spring with Our Vibrant New Collection</h1>
+            <p>Discover the latest trends, timeless classics, and unique pieces designed to make you stand out. From
+                chic workwear to stunning evening wear, our collection has something for every occasion.</p>
+            <button class="btnHome"><b>EXPLORE NOW</b></button>
+
+        </div>
+
+    </div>
+    <!-- ===================== section2 =================================================== -->
+    <div class="section2">
+        <!-- A mini-Navbar for Home -->
+
+        <div class="mini-nav">
+            <h1><b>MEN</b></h1>
+            <a href="/user/productList?category=671102f839e8fee6025ba0ca">View More <i
+                    class="fa-solid fa-square-arrow-up-right" style="color: #0f0f0f;"></i> </a>
+        </div>
+
+        <!-- product cards -->
+        <div class="container">
+            <div class="row">
+                <% menProducts.forEach(function(product) { %>
+                    <div class="col-md-3 product-card">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                <a href="/user/productList/<%= product._id %>">
+                                    <img src="<%= product.images[0] %>" class="card-img-top product-image"
+                                        alt="<%= product.productName %>">
+                                </a>
+
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    <%= product.productName %>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-secondary variant-badge">
+                                        <%= product.variant %>
+                                    </span>
+                                    <div class="price-container">
+                                        <% if (product.offerPrice) { %>
+                                            <div class="price-right-container">
+                                                <% const savings=((product.price - product.offerPrice) / product.price *
+                                                    100).toFixed(0) %>
+                                                    <span class="savings-badge">
+                                                        <%= savings %>% OFF
+                                                    </span>
+                                                    <div class="price-stack">
+                                                        <span class="offer-price">₹<%=
+                                                                product.offerPrice.toLocaleString() %></span>
+                                                        <span class="original-price">₹<%= product.price.toLocaleString()
+                                                                %></span>
+                                                    </div>
+                                            </div>
+                                            <% } else { %>
+                                                <span class="price">₹<%= product.price.toLocaleString() %></span>
+                                                <% } %>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+    </div>
+    <!-- ==================================== section3 ======================================================= -->
+    <div class="section2">
+        <!-- A mini-Navbar for Home -->
+
+        <div class="mini-nav">
+            <h1><b>WOMEN</b></h1>
+            <a href="/user/productList?category=6704dd3f6f8228100a7352ba">View More <i
+                    class="fa-solid fa-square-arrow-up-right" style="color: #0f0f0f;"></i> </a>
+        </div>
+
+        <!-- product cards -->
+        <div class="container">
+            <div class="row">
+                <% womenProducts.forEach(function(product) { %>
+                    <div class="col-md-3 product-card">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                <a href="/user/productList/<%= product._id %>">
+                                    <img src="<%= product.images[0] %>" class="card-img-top product-image"
+                                        alt="<%= product.productName %>">
+
+                                </a>
+
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    <%= product.productName %>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-secondary variant-badge">
+                                        <%= product.variant %>
+                                    </span>
+                                    <div class="price-container">
+                                        <% if (product.offerPrice) { %>
+                                            <div class="price-right-container">
+                                                <% const savings=((product.price - product.offerPrice) / product.price *
+                                                    100).toFixed(0) %>
+                                                    <span class="savings-badge">
+                                                        <%= savings %>% OFF
+                                                    </span>
+                                                    <div class="price-stack">
+                                                        <span class="offer-price">₹<%=
+                                                                product.offerPrice.toLocaleString() %></span>
+                                                        <span class="original-price">₹<%= product.price.toLocaleString()
+                                                                %></span>
+                                                    </div>
+                                            </div>
+                                            <% } else { %>
+                                                <span class="price">₹<%= product.price.toLocaleString() %></span>
+                                                <% } %>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+
+    </div>
+    <!-- =============================================section4==================================== -->
+    <div class="section4">
+
+
+        <div class="description4">
+            <h1>ABOUT US</h1>
+            <p> we are passionate about bringing you the latest in fashion, combining style, quality, and
+                affordability.
+                Our journey began with a simple idea: to create a place where everyone can find clothing that fits
+                their
+                personal style and lifestyle. We believe fashion is for everyone, and we strive to make shopping an
+                enjoyable and seamless experience.</p>
+            <button class="btnHome">View more</button>
+
+        </div>
+
+    </div>
+
+    <!--=============================== section5 ===================================================-->
+    <div class="section5">
+
+
+        <div class="description1">
+            <h1>Designed to Precision</h1>
+            <p>Discover our thoughtfully selected range of fashionable and enduring items designed to complement any
+                occasion and individual style.</p>
+
+        </div>
+
+    </div>
+
+
+    <!--=========================== section6 =======================================================-->
+    <div class="section2">
+        <!-- A mini-Navbar for Home -->
+
+        <div class="mini-nav">
+            <h1><b>SEASONAL<br>COLLECTION</b></h1>
+            <a href="/user/productList?category=6704dd4b6f8228100a7352be">View More <i
+                    class="fa-solid fa-square-arrow-up-right" style="color: #0f0f0f;"></i> </a>
+        </div>
+
+        <!-- product cards -->
+        <div class="container">
+            <div class="row">
+                <% seasonalProducts.forEach(function(product) { %>
+                    <div class="col-md-3 product-card">
+                        <div class="card h-100">
+                            <div class="position-relative">
+                                <a href="/user/productList/<%= product._id %>">
+                                    <img src="<%= product.images[0] %>" class="card-img-top product-image"
+                                        alt="<%= product.productName %>">
+                                </a>
+
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    <%= product.productName %>
+                                </h5>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-secondary variant-badge">
+                                        <%= product.variant %>
+                                    </span>
+                                    <div class="price-container">
+                                        <% if (product.offerPrice) { %>
+                                            <div class="price-right-container">
+                                                <% const savings=((product.price - product.offerPrice) / product.price *
+                                                    100).toFixed(0) %>
+                                                    <span class="savings-badge">
+                                                        <%= savings %>% OFF
+                                                    </span>
+                                                    <div class="price-stack">
+                                                        <span class="offer-price">₹<%=
+                                                                product.offerPrice.toLocaleString() %></span>
+                                                        <span class="original-price">₹<%= product.price.toLocaleString()
+                                                                %></span>
+                                                    </div>
+                                            </div>
+                                            <% } else { %>
+                                                <span class="price">₹<%= product.price.toLocaleString() %></span>
+                                                <% } %>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <!--=============================== section7 ============================================-->
+
+
+
+    <div class="section7">
+
+
+        <div class="description1">
+            <h1>Stay in touch</h1>
+            <p>We’re here to help! Whether you have questions about our products, need assistance with your order,
+                or
+                just want to share your feedback, feel free to reach out.</p>
+            <button class="btnHome"><b>CONTACT US</b></button>
+
+        </div>
+
+    </div>
+</div>

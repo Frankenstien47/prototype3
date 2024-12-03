@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | DC-stores</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css">
+    <link rel="stylesheet" href="/stylesheets/checkout.css">
+    <script src="/javascript/checkout.js" defer></script>
+
+    <style>
+        .available-coupons {
+            margin-top: 1rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .coupon-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .coupon-item {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 1rem;
+            width: 100%;
+            max-width: 250px;
+            background-color: #f9f9f9;
+        }
+
+        .coupon-code {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .coupon-description {
+            color: #2ecc71;
+            margin-bottom: 0.25rem;
+        }
+
+        .coupon-conditions {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="checkout-container">
+        <div class="left-column">
+            <!-- Address Section -->
+            <div class="address-section">
+
+                <div class="card">
+                    <h2 class="section-title">Select Delivery Address</h2>
+                    <div class="addresses">
+                        <% if (addresses.length===0) { %>
+                            <div class="no-address">
+                                <p>No delivery addresses found. Please add an address to continue.</p>
+                                <button class="btn btn-primary add-address-btn">Add New Address</button>
+                            </div>
+                            <% } else { %>
+                                <% addresses.forEach(address=> { %>
+                                    <div class="address-card">
+                                        <input type="radio" name="addressId" value="<%= address._id %>" required>
+                                        <div class="address-details">
+                                            <p><strong>
+                                                    <%= address.userName %>
+                                                </strong></p>
+                                            <p>
+                                                <%= address.house %>, <%= address.location %>
+                                            </p>
+                                            <p>
+                                                <%= address.city %>, <%= address.district %>
+                                            </p>
+                                            <p>
+                                                <%= address.state %>, <%= address.country %> - <%= address.pinCode %>
+                                            </p>
+                                            <p>Phone: <%= address.phone %>
+                                            </p>
+                                            <span class="address-type">
+                                                <%= address.addressType %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                        <button class="btn btn-secondary add-address-btn">Add New Address</button>
+                                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <div class="card">
+                    <h2 class="section-title">Payment Method</h2>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="cashOnDelivery" checked>
+                        <div>
+                            <strong>Cash on Delivery (COD)</strong>
+                            <span class="cod-info">Pay when your order is delivered</span>
+                        </div>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" id="walletPayment" name="paymentMethod" value="walletPayment">
+                        <label for="walletPayment">
+                            <b>Wallet Payment</b>
+                            <span id="walletBalance" data-balance="<%= walletBalance %>" class="ml-2">
+                                (Balance: ₹<%= walletBalance.toFixed(2) %>)
+                            </span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="onlinePayment">
+                        <div>
+                            <strong>Online Payment</strong>
+                            <span class="online-payment-info">Pay securely via Razorpay</span>
+                            <img src="/images/razorpay-icon.svg" alt="Razorpay" class="payment-icon">
+                        </div>
+                    </div>
+                </div>
+                <button id="place-order" class="btn btn-primary">Place Order</button>
+            </div>
+        </div>
+
+        <!-- Right Column - Order Summary -->
+        <div class="order-summary">
+            <div class="card">
+                <h2 class="section-title">Order Summary</h2>
+                <div class="cart-items">
+                    <% cart.items.forEach(item=> { %>
+                        <% let itemTotal=0; %>
+                            <% if(item.productId.offerPrice){ %>
+                                <% itemTotal=item.productId.offerPrice * item.quantity; %>
+                                    <% }else{ %>
+                                        <% itemTotal=item.productId.price * item.quantity; %>
+                                            <% } %>
+                                                <div class="checkout-item">
+                                                    <img src="<%= item.productId.images[0] %>"
+                                                        alt="<%= item.productId.name %>">
+                                                    <div class="item-details">
+                                                        <h3>
+                                                            <%= item.productId.name %>
+                                                        </h3>
+                                                        <p class="quantity">Quantity: <%= item.quantity %>
+                                                        </p>
+                                                        <%if(item.productId.offerPrice){ %>
+                                                            <p class="price">Price: ₹<%=
+                                                                    item.productId.offerPrice.toFixed(2) %>
+                                                            </p>
+                                                            <% }else{ %>
+                                                                <p class="price">Price: ₹<%=
+                                                                        item.productId.price.toFixed(2) %>
+                                                                </p>
+                                                                <% } %>
+                                                                    <p class="item-total">Item Total: ₹<%=
+                                                                            itemTotal.toFixed(2) %>
+                                                                    </p>
+                                                    </div>
+                                                </div>
+                                                <% }); %>
+                </div>
+
+                <!-- Add Coupon Section -->
+                <div class="coupon-section">
+                    <div class="coupon-input">
+                        <input type="text" id="couponCode" placeholder="Enter Coupon Code" class="form-control">
+                        <button id="applyCoupon" class="btn btn-secondary">Apply</button>
+                        <button id="removeCoupon" class="btn btn-danger" style="display: none;">Remove</button>
+                    </div>
+
+                    <% if (usableCoupons && usableCoupons.length> 0) { %>
+                        <div class="available-coupons">
+                            <h3>Available Coupons</h3>
+                            <div class="coupon-list">
+                                <% usableCoupons.forEach(coupon=> { %>
+                                    <div class="coupon-item">
+                                        <div class="coupon-code">
+                                            <%= coupon.code %>
+                                        </div>
+                                        <div class="coupon-description">
+                                            <% if (coupon.discountType==='percentage' ) { %>
+                                                <%= coupon.discountValue %>% off
+                                                    <% if (coupon.maxDiscount) { %>
+                                                        (Max ₹<%= coupon.maxDiscount %>)
+                                                            <% } %>
+                                                                <% } else { %>
+                                                                    ₹<%= coupon.discountValue %> off
+                                                                        <% } %>
+                                        </div>
+                                        <div class="coupon-conditions">
+                                            Minimum Order: ₹<%= coupon.minOrderValue %>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <div id="couponMessage" class="coupon-message"></div>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>₹<%= totalAmount.toFixed(2) %></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Delivery Fee:</span>
+                        <span>₹40.00</span>
+                    </div>
+                    <div class="total-row discount-row" style="display: none;">
+                        <span>Discount:</span>
+                        <span id="discountAmount">-₹0.00</span>
+                    </div>
+                    <div class="total-row final-total">
+                        <span>Total Amount:</span>
+                        <span id="finalAmount">₹<%= (totalAmount + 40).toFixed(2) %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div id="addAddressModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Address</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="addAddressForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="userName" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" class="form-control" name="phone" placeholder="Phone Number" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="house" placeholder="House/Building Number" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="location" placeholder="Street/Area" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="city" placeholder="City" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="district" placeholder="District" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="state" placeholder="State" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="country" placeholder="Country" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="form-control" name="pinCode" placeholder="PIN Code" required>
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="addressType" required>
+                        <option value="">Select Address Type</option>
+                        <option value="home">Home</option>
+                        <option value="work">Work</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" id="saveAddress">Save Address</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+
+</body>
+
+</html>

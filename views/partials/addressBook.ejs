@@ -1,0 +1,519 @@
+<style>
+    .container {
+        width: 75vw !important;
+        margin-left: 10%;
+    }
+
+    .error-feedback {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+</style>
+
+<div class="container mt-5">
+    <h2>Address Book</h2>
+
+    <!-- Display existing addresses -->
+    <div id="addressList" class="mb-4">
+        <% if (addresses && addresses.length> 0) { %>
+            <% addresses.forEach(function(address, index) { %>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%= address.addressType.charAt(0).toUpperCase() + address.addressType.slice(1) %> Address
+                        </h5>
+                        <p class="card-text">
+                            <%= address.userName %><br>
+                                <%= address.house %>, <%= address.location %><br>
+                                        <%= address.city %>, <%= address.district %><br>
+                                                <%= address.state %>, <%= address.country %><br>
+                                                        Pin Code: <%= address.pinCode %><br>
+                                                            Phone: <%= address.phone %>
+                        </p>
+                        <button class="btn btn-sm btn-warning edit-address"
+                            data-address-id="<%= address._id %>">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-address"
+                            data-address-id="<%= address._id %>">Delete</button>
+                    </div>
+                </div>
+                <% }); %>
+                    <% } else { %>
+                        <p>No addresses found. Add a new address below.</p>
+                        <% } %>
+    </div>
+
+    <!-- Add new address form -->
+    <h3>Add New Address</h3>
+    <form id="addAddressForm">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="userName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="userName" name="userName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="district" class="form-label">District</label>
+                <input type="text" class="form-control" id="district" name="district" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="house" class="form-label">House/Building</label>
+                <input type="text" class="form-control" id="house" name="house" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="pinCode" class="form-label">PinCode</label>
+                <input type="text" class="form-control" id="pinCode" name="pinCode" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="addressType" class="form-label">Address Type</label>
+            <select class="form-select" id="addressType" name="addressType" required>
+                <option value="">Select Address Type</option>
+                <option value="home">Home</option>
+                <option value="work">Work</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Address</button>
+    </form>
+
+    <!-- Edit Address Modal -->
+    <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editAddressForm">
+                        <input type="hidden" id="editAddressId" name="addressId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editUserName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="editUserName" name="userName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editPhone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="editCountry" name="country" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editState" class="form-label">State</label>
+                                <input type="text" class="form-control" id="editState" name="state" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editDistrict" class="form-label">District</label>
+                                <input type="text" class="form-control" id="editDistrict" name="district" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="editCity" name="city" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editLocation" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="editLocation" name="location" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editHouse" class="form-label">House/Building</label>
+                                <input type="text" class="form-control" id="editHouse" name="house" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editPinCode" class="form-label">PinCode</label>
+                                <input type="text" class="form-control" id="editPinCode" name="pinCode" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAddressType" class="form-label">Address Type</label>
+                            <select class="form-select" id="editAddressType" name="addressType" required>
+                                <option value="home">Home</option>
+                                <option value="work">Work</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEditAddress">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const validationRules = {
+        userName: {
+            pattern: /^[a-zA-Z\s]{3,50}$/,
+            message: 'Name should be 3-50 characters long and contain only letters and spaces'
+        },
+        phone: {
+            pattern: /^\d{10}$/,
+            message: 'Phone number should be exactly 10 digits'
+        },
+        country: {
+            pattern: /^[a-zA-Z\s]{2,50}$/,
+            message: 'Country should be 2-50 characters long and contain only letters and spaces'
+        },
+        state: {
+            pattern: /^[a-zA-Z\s]{2,50}$/,
+            message: 'State should be 2-50 characters long and contain only letters and spaces'
+        },
+        district: {
+            pattern: /^[a-zA-Z\s]{2,50}$/,
+            message: 'District should be 2-50 characters long and contain only letters and spaces'
+        },
+        city: {
+            pattern: /^[a-zA-Z\s]{2,50}$/,
+            message: 'City should be 2-50 characters long and contain only letters and spaces'
+        },
+        location: {
+            pattern: /^[a-zA-Z0-9\s,.-]{5,100}$/,
+            message: 'Location should be 5-100 characters long and contain only letters, numbers, spaces, and basic punctuation'
+        },
+        house: {
+            pattern: /^[a-zA-Z0-9\s,.-]{1,50}$/,
+            message: 'House/Building should be 1-50 characters long and contain only letters, numbers, spaces, and basic punctuation'
+        },
+        pinCode: {
+            pattern: /^\d{6}$/,
+            message: 'Pin Code should be exactly 6 digits'
+        },
+        addressType: {
+            pattern: /^(home|work)$/,
+            message: 'Please select a valid address type'
+        }
+    };
+
+    // Validation function
+    function validateField(field, value) {
+        const rule = validationRules[field];
+        if (!rule) return true;
+        return rule.pattern.test(value);
+    }
+
+    // Show error message
+    function showError(input, message) {
+        input.classList.add('is-invalid');
+        let errorDiv = input.nextElementSibling;
+        if (!errorDiv || !errorDiv.classList.contains('error-feedback')) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'error-feedback';
+            input.parentNode.insertBefore(errorDiv, input.nextElementSibling);
+        }
+        errorDiv.textContent = message;
+    }
+
+    // Clear error message
+    function clearError(input) {
+        input.classList.remove('is-invalid');
+        const errorDiv = input.nextElementSibling;
+        if (errorDiv && errorDiv.classList.contains('error-feedback')) {
+            errorDiv.remove();
+        }
+    }
+
+    // Validate form
+    function validateForm(form) {
+        let isValid = true;
+        const formData = new FormData(form);
+
+        for (const [field, value] of formData.entries()) {
+            const input = form.elements[field];
+            const rule = validationRules[field];
+
+            if (rule) {
+                clearError(input);
+                if (!validateField(field, value)) {
+                    showError(input, rule.message);
+                    isValid = false;
+                }
+            }
+        }
+
+        return isValid;
+    }
+
+    // Utility function to set form field values 
+    const setFieldValue = (formId, fieldName, value) => {
+        const field = document.getElementById(`${formId}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`);
+        if (field) {
+            field.value = value;
+            // Trigger validation
+            const rule = validationRules[fieldName];
+            if (rule) {
+                clearError(field);
+                if (!validateField(fieldName, value)) {
+                    showError(field, rule.message);
+                }
+            }
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Add Address Form Validation
+        const addAddressForm = document.getElementById('addAddressForm');
+        addAddressForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if (!validateForm(this)) {
+                return;
+            }
+
+            Swal.fire({ title: 'Adding Address...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            const formData = new FormData(this);
+            const addressData = Object.fromEntries(formData.entries());
+
+            fetch('/user/address/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(addressData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        Swal.fire('Address Added!', '', 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error!', data.message || 'Failed to add address.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding address:', error);
+                    Swal.fire('Error!', 'An error occurred while adding the address.', 'error');
+                });
+        });
+
+        // Real-time validation for Add Address Form
+        addAddressForm.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', function () {
+                const rule = validationRules[this.name];
+                if (rule) {
+                    clearError(this);
+                    if (!validateField(this.name, this.value)) {
+                        showError(this, rule.message);
+                    }
+                }
+            });
+        });
+
+        // Edit Address Button Event Handlers
+        document.querySelectorAll('.edit-address').forEach(button => {
+            button.addEventListener('click', async function () {
+                const addressId = this.getAttribute('data-address-id');
+
+                try {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Loading...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    const response = await fetch(`/user/address/${addressId}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch address data');
+                    }
+
+                    const data = await response.json();
+                    const address = data.address || data; // Handle both {address: {...}} and direct address object formats
+
+                    // Close loading state
+                    Swal.close();
+
+                    if (!address) {
+                        throw new Error('No address data received');
+                    }
+
+                    // Debug log
+                    console.log('Received address data:', address);
+
+                    const editForm = document.getElementById('editAddressForm');
+                    editForm.reset();
+                    editForm.querySelectorAll('.is-invalid').forEach(field => clearError(field));
+
+                    // Set hidden address ID
+                    document.getElementById('editAddressId').value = addressId;
+
+                    // Map of fields and their corresponding form input IDs
+                    const fieldMappings = {
+                        userName: 'editUserName',
+                        phone: 'editPhone',
+                        country: 'editCountry',
+                        state: 'editState',
+                        district: 'editDistrict',
+                        city: 'editCity',
+                        location: 'editLocation',
+                        house: 'editHouse',
+                        pinCode: 'editPinCode',
+                        addressType: 'editAddressType'
+                    };
+
+                    // Fill form fields
+                    Object.entries(fieldMappings).forEach(([field, inputId]) => {
+                        const input = document.getElementById(inputId);
+                        if (input && address[field] !== undefined) {
+                            input.value = address[field];
+
+                            // Validate the field after setting value
+                            const rule = validationRules[field];
+                            if (rule) {
+                                clearError(input);
+                                if (!validateField(field, address[field].toString())) {
+                                    showError(input, rule.message);
+                                }
+                            }
+                        } else {
+                            console.warn(`Field ${field} or input ${inputId} not found`);
+                        }
+                    });
+
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+                    modal.show();
+                    document.getElementById('editAddressModal').modal = modal;
+
+                } catch (error) {
+                    console.error('Error in edit address flow:', error);
+                    Swal.fire('Error!', 'Failed to load address details: ' + error.message, 'error');
+                }
+            });
+        });
+        // Edit Form Validation
+        const editAddressForm = document.getElementById('editAddressForm');
+        editAddressForm.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', function () {
+                const rule = validationRules[this.name];
+                if (rule) {
+                    clearError(this);
+                    if (!validateField(this.name, this.value)) {
+                        showError(this, rule.message);
+                    }
+                }
+            });
+        });
+
+        // Save Edit 
+        document.getElementById('saveEditAddress').addEventListener('click', async function () {
+            const editForm = document.getElementById('editAddressForm');
+
+            if (!validateForm(editForm)) {
+                return;
+            }
+
+            const formData = new FormData(editForm);
+            const addressData = Object.fromEntries(formData.entries());
+
+            try {
+                Swal.fire({
+                    title: 'Saving Changes...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const response = await fetch(`/user/address/edit/${addressData.addressId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(addressData),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = document.getElementById('editAddressModal').modal;
+                    if (modal) {
+                        modal.hide();
+                    }
+                    await Swal.fire('Success!', 'Address updated successfully.', 'success');
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Failed to update address');
+                }
+
+            } catch (error) {
+                console.error('Error updating address:', error);
+                Swal.fire('Error!', error.message || 'Failed to update address.', 'error');
+            }
+        });
+
+        // Delete Address Functionality
+        document.getElementById('addressList').addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-address')) {
+                const addressId = e.target.getAttribute('data-address-id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you really want to delete this address?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/user/address/${addressId}`, { method: 'DELETE' })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Deleted!', 'Address has been deleted.', 'success')
+                                        .then(() => location.reload());
+                                } else {
+                                    Swal.fire('Error!', data.message || 'Failed to delete address.', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error deleting address:', error);
+                                Swal.fire('Error!', 'An error occurred while deleting the address.', 'error');
+                            });
+                    }
+                });
+            }
+        });
+    });
+</script>

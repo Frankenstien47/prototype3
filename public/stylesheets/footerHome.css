@@ -1,0 +1,95 @@
+/* Footer Styling */
+.footer {
+    background-color: #ffffff;
+    /* Dark background for footer */
+    color: #000000;
+    /* White text */
+    padding: 30px 0;
+    text-align: center;
+    height: 20vh;
+    margin-top: 10vh;
+    position: relative;
+
+
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-logo img {
+    width: 120px;
+    /* Adjust logo size */
+    margin-bottom: 20px;
+}
+
+.footer-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    /* Spacing between menu items */
+}
+
+.footer-nav a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.footer-nav a:hover {
+    text-decoration: underline;
+    /* Highlight color on hover */
+}
+
+
+.footer-separator {
+    border-top: 1px solid #555;
+    /* Thin line */
+    margin: 20px 0;
+}
+
+.footer-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    /* Spacing between items */
+}
+
+.footer-info a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.footer-info a:hover {
+    text-decoration: underline;
+    /* Highlight color on hover */
+}
+
+.footer-info li {
+    font-size: 18px;
+
+}
+
+/* Responsive Footer Adjustments */
+@media (max-width: 768px) {
+    .footer-nav ul {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .footer-info ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

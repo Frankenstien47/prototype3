@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&family=Manrope:wght@200..800&display=swap');
+
+
+
+body {
+    font-family: "Manrope", sans-serif !important;
+    margin: 0%;
+    padding: 0%;
+    overflow-x: hidden;
+
+    :root {
+        --primary-color: aliceblue,
+            --secondary-color:black,
+    }
+}

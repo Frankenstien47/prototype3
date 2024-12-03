@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: rgb(255, 255, 255);
+        }
+
+        .stats-card {
+            transition: transform 0.3s;
+            cursor: pointer;
+            border-radius: 17px;
+            background-color: #f7f7f7;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 400px;
+            width: 100%;
+        }
+
+        .filter-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="content p-4">
+            <!-- Header Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Total Users</h5>
+                            <h2 class="mb-0">
+                                <%= totalUsers %>
+                            </h2>
+                            <small class="text-muted">Registered users</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Total Products</h5>
+                            <h2 class="mb-0">
+                                <%= totalProducts %>
+                            </h2>
+                            <small class="text-muted">Active products</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Today's Sales</h5>
+                            <h2 class="mb-0">
+                                ₹<%= todaysSalesAmount.toFixed(2) %>
+                            </h2>
+                            <small class="text-muted">Total revenue today</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Frame Filter -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Sales Analytics</h2>
+                <div class="filter-container">
+                    <select id="timeFrame" class="form-select">
+                        <option value="weekly">Last 7 Days</option>
+                        <option value="monthly">This Month</option>
+                        <option value="yearly">This Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sales Chart -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Sales Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products and Categories -->
+            <div class="row">
+                <!-- Top Products -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top 10 Products</h5>
+                        </div>
+                        <div class="card-body table-container">
+                            <table class="table table-hover" id="topProductsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Categories -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top 10 Categories</h5>
+                        </div>
+                        <div class="card-body table-container">
+                            <table class="table table-hover" id="topCategoriesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Quantity</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let salesChart;
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData('weekly');
+
+            document.getElementById('timeFrame').addEventListener('change', (e) => {
+                loadDashboardData(e.target.value);
+            });
+        });
+
+        async function loadDashboardData(timeFrame) {
+            try {
+                const response = await fetch(`/admin/dashboard-stats?timeFrame=${timeFrame}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.success) {
+                    updateSalesChart(data.data.salesData);
+                    updateTopProducts(data.data.topProducts);
+                    updateTopCategories(data.data.topCategories);
+                } else {
+                    console.error('Data fetch failed:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function updateSalesChart(salesData) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            const labels = salesData.map(item =>
+                `${item._id.year}-${String(item._id.month).padStart(2, '0')}-${String(item._id.day).padStart(2, '0')}`
+            );
+            const sales = salesData.map(item => item.totalAmount);
+
+            if (salesChart) {
+                salesChart.destroy();
+            }
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sales',
+                        data: sales,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return '₹' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTopProducts(products) {
+            const tbody = document.querySelector('#topProductsTable tbody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.productName}</td>
+                    <td>${product.totalQuantity.toLocaleString()}</td>
+                    <td>₹${product.totalRevenue.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTopCategories(categories) {
+            const tbody = document.querySelector('#topCategoriesTable tbody');
+            tbody.innerHTML = '';
+
+            categories.forEach(category => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category.categoryDetails.name}</td>
+                    <td>${category.totalQuantity.toLocaleString()}</td>
+                    <td>₹${category.totalRevenue.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+
+</html>

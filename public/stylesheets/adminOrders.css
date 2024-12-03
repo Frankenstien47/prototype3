@@ -1,0 +1,260 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+
+}
+
+.content {
+    margin-left: 3%;
+    width: 100%;
+    margin-bottom: 7vh;
+    margin-top: 4vh;
+    height: 100vh;
+}
+
+.container {
+    height: 90vh;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    color: #111827;
+}
+
+.total-orders {
+    background: #f3f4f6;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.table-container {
+    overflow-x: auto;
+    height: calc(85vh - 5rem);
+
+
+    /* Subtract header height */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: #f9fafb;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    z-index: 1;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+tr:hover {
+    background-color: #f9fafb;
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.customer-name {
+    font-weight: 500;
+    color: #111827;
+}
+
+.customer-email {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: inline-block;
+}
+
+.status-Processing {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-Shipped {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-Delivered {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-Cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status-Returned {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.action-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.status-select {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    width: 100%;
+    font-size: 0.875rem;
+    color: #374151;
+    background-color: white;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+    margin: 30px;
+    width: max-content;
+}
+
+.btn-update {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-update:hover {
+    background-color: #2563eb;
+}
+
+.btn-cancel {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #dc2626;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.total-amount {
+    font-weight: 500;
+    color: #111827;
+}
+
+.payment-method {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Custom scrollbar styles */
+.table-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.status-return-requested {
+    background-color: #ffe4e6;
+    color: #9f1239;
+}
+
+.btn-return-action {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.btn-return-action:hover {
+    background-color: #2563eb;
+}
+
+.return-reason {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f3f4f6;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.return-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}

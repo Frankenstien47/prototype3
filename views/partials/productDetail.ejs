@@ -1,0 +1,359 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/stylesheets/productDetails.css">
+<!-- Add SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.css">
+<style>
+    .price-container {
+        margin-bottom: 20px;
+    }
+
+    .original-price {
+        color: #ff0000;
+        font-size: 1.5rem;
+        text-decoration: line-through;
+        margin-right: 10px;
+    }
+
+    .offer-price {
+        color: forestgreen;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .discount-percentage {
+        background-color: #28a745;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        margin-left: 10px;
+        width: 100px;
+    }
+
+    .related-product-card .card-price {
+        margin-bottom: 10px;
+    }
+
+    .related-product-card .original-price {
+        font-size: 1.1rem;
+        color: #ff0000;
+        text-decoration: line-through;
+        margin-right: 8px;
+    }
+
+    .related-product-card .offer-price {
+        font-size: 1.2rem;
+        color: forestgreen;
+        font-weight: bold;
+    }
+
+    .related-product-card .discount-percentage {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.8rem;
+    }
+</style>
+<div class="container1">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/user/productList">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <%= product.productName %>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="main-image-container">
+                <img id="mainImage" src="<%= product.images[0] %>" class="main-image" alt="<%= product.productName %>">
+                <div class="zoom-lens"></div>
+                <div class="zoom-result"></div>
+            </div>
+            <div class="d-flex justify-content-center gap-3">
+                <% product.images.forEach(function(image, index) { %>
+                    <img src="<%= image %>" class="thumbnail" onclick="changeMainImage(this.src)"
+                        alt="Product image <%= index + 1 %>">
+                    <% }); %>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1>
+                <%= product.productName %>
+            </h1>
+            <div class="rating">
+                <% for(let i=0; i < 5; i++) { %>
+                    <i class="fas fa-star star"></i>
+                    <% } %>
+            </div>
+            <div class="price-container">
+                <% if (product.offerPrice) { %>
+                    <span class="original-price">₹<%= product.price %></span>
+                    <span class="offer-price">₹<%= product.offerPrice %></span>
+                    <span class="discount-percentage">
+                        <%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %>% OFF
+                    </span>
+                    <% } else { %>
+                        <p class="price">₹<%= product.price %>
+                        </p>
+                        <% } %>
+            </div>
+            <span class="variant-badge">
+                <%= product.variant %>
+            </span>
+            <p class="stock-info">
+                <i class="fas fa-box"></i>
+                <strong>Stock:</strong>
+                <% if (product.stock> 0) { %>
+                    <span class="text-success">
+                        <%= product.stock %> units available
+                    </span>
+                    <% } else { %>
+                        <span class="text-danger">Out of stock</span>
+                        <% } %>
+            </p>
+            <!-- <div class="mb-4">
+                <div class="input-group">
+                    <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+                    <button class="couponBtn" type="button" onclick="applyCoupon()">Apply Coupon</button>
+                </div>
+            </div> -->
+
+            <div class="d-grid gap-2 d-md-flex mb-4">
+                <form id="addToCartForm" class="flex-grow-1">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-outline-primary w-100"
+                        style="background-color: #000000; color: white;">
+                        Add to Cart
+                    </button>
+                </form>
+            </div>
+            <div class="description-section">
+                <h3>Product Description</h3>
+                <p>
+                    <%= product.description %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="related-products">
+    <div class="container">
+        <h2>Related Products</h2>
+        <div class="row">
+            <% relatedProducts.forEach(function(relatedProduct) { %>
+                <div class="col-md-3 mb-4">
+                    <div class="card related-product-card h-100">
+                        <img src="<%= relatedProduct.images[0] %>" class="card-img-top"
+                            alt="<%= relatedProduct.productName %>">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= relatedProduct.productName %>
+                            </h5>
+                            <div class="card-price">
+                                <% if (relatedProduct.offerPrice) { %>
+                                    <span class="original-price">₹<%= relatedProduct.price %></span>
+                                    <span class="offer-price">₹<%= relatedProduct.offerPrice %></span>
+                                    <span class="discount-percentage">
+                                        <%= Math.round(((relatedProduct.price - relatedProduct.offerPrice) /
+                                            relatedProduct.price) * 100) %>% OFF
+                                    </span>
+                                    <% } else { %>
+                                        <p class="card-text">₹<%= relatedProduct.price %>
+                                        </p>
+                                        <% } %>
+                            </div>
+                            <a href="/user/productList/<%= relatedProduct._id %>" class="btn btn-primary">View
+                                Product</a>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bootstrap JS and SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.min.js"></script>
+
+<script>
+    function changeMainImage(src) {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.style.opacity = '0';
+        setTimeout(() => {
+            mainImage.src = src;
+            mainImage.style.opacity = '1';
+        }, 300);
+    }
+
+    // Zoom functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const mainContainer = document.querySelector('.main-image-container');
+        const mainImage = document.getElementById('mainImage');
+        const zoomLens = document.querySelector('.zoom-lens');
+        const zoomResult = document.querySelector('.zoom-result');
+
+        let zoomActive = false;
+
+        function moveZoomLens(e) {
+            if (!zoomActive) return;
+
+            const rect = mainContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left - zoomLens.offsetWidth / 2;
+            const y = e.clientY - rect.top - zoomLens.offsetHeight / 2;
+
+            const maxX = mainImage.offsetWidth - zoomLens.offsetWidth;
+            const maxY = mainImage.offsetHeight - zoomLens.offsetHeight;
+
+            const boundedX = Math.min(Math.max(0, x), maxX);
+            const boundedY = Math.min(Math.max(0, y), maxY);
+
+            zoomLens.style.left = boundedX + 'px';
+            zoomLens.style.top = boundedY + 'px';
+
+            const scaleX = zoomResult.offsetWidth / zoomLens.offsetWidth;
+            const scaleY = zoomResult.offsetHeight / zoomLens.offsetHeight;
+
+            zoomResult.style.backgroundImage = `url(${mainImage.src})`;
+            zoomResult.style.backgroundSize = `${mainImage.width * scaleX}px ${mainImage.height * scaleY}px`;
+            zoomResult.style.backgroundPosition = `-${boundedX * scaleX}px -${boundedY * scaleY}px`;
+        }
+
+        mainContainer.addEventListener('mouseenter', function (e) {
+            zoomActive = true;
+            zoomLens.style.display = 'block';
+            zoomResult.style.display = 'block';
+            moveZoomLens(e);
+        });
+
+        mainContainer.addEventListener('mouseleave', function () {
+            zoomActive = false;
+            zoomLens.style.display = 'none';
+            zoomResult.style.display = 'none';
+        });
+
+        mainContainer.addEventListener('mousemove', moveZoomLens);
+    });
+
+    // Add to Cart functionality with SweetAlert
+    document.getElementById('addToCartForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch('/user/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: 'Product has been added to your cart successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Continue Shopping',
+                    showCancelButton: true,
+                    cancelButtonText: 'View Cart',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        window.location.href = '/user/cart';
+                    }
+                });
+            } else {
+                const errorData = await response.json();
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorData.message || 'Failed to add product to cart',
+                    icon: 'error',
+                    confirmButtonColor: '#000000'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred',
+                icon: 'error',
+                confirmButtonColor: '#000000'
+            });
+        }
+    });
+
+    // Coupon functionality with SweetAlert
+    function applyCoupon() {
+        const couponCode = document.getElementById('couponCode').value;
+        if (couponCode) {
+            Swal.fire({
+                title: 'Success!',
+                text: `Coupon "${couponCode}" applied successfully!`,
+                icon: 'success',
+                confirmButtonColor: '#000000'
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Please enter a coupon code',
+                icon: 'warning',
+                confirmButtonColor: '#000000'
+            });
+        }
+    }
+
+    // Add smooth transition for main image
+    document.getElementById('mainImage').style.transition = 'opacity 0.3s ease-in-out';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const sortSelect = document.getElementById('sortSelect');
+        const categorySelect = document.getElementById('categorySelect');
+        const clearFilters = document.getElementById('clearFilters');
+        const productsContainer = document.getElementById('productsContainer');
+
+        function applyFilters() {
+            const sortBy = sortSelect.value;
+            const categoryId = categorySelect.value;
+
+            fetch(`/user/products/filter?sort=${sortBy}&category=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        productsContainer.innerHTML = data.html;
+                    } else {
+                        swal({
+                            title: "Error!",
+                            text: "Failed to filter products",
+                            icon: "error",
+                            button: "OK",
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    swal({
+                        title: "Error!",
+                        text: "An error occurred while filtering products",
+                        icon: "error",
+                        button: "OK",
+                    });
+                });
+        }
+
+        sortSelect.addEventListener('change', applyFilters);
+        categorySelect.addEventListener('change', applyFilters);
+
+        clearFilters.addEventListener('click', function () {
+            sortSelect.value = '';
+            categorySelect.value = '';
+            applyFilters();
+        });
+    });
+
+</script>

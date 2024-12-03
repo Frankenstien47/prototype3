@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 400px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /*logo */
+        .logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            width: 80px;
+        }
+
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            /* Space between form fields */
+        }
+
+        .loginBtn {
+            flex: 1;
+            padding: 5px;
+            background-color: rgb(229, 226, 226);
+            color: rgb(28, 28, 28);
+            border: 2px thin rgb(34, 34, 34);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            height: 40px;
+            border-radius: 24px;
+        }
+
+        .loginBtn:hover {
+            background-color: #000000;
+            color: white;
+            transform: scale(1);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .google-login-btn {
+            height: 35px;
+            font-size: 14px;
+            margin-top: 10px;
+            /* Space between login button and Google button */
+        }
+
+        .google-login-btn img {
+            width: 20px;
+            /* Decreased size of Google logo */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <img class="logo" src="/images/adminLogo.svg" alt="AdminLogo">
+        <form method="POST" action="/admin/login">
+            <% if (error_msg) { %>
+                <div class="alert" style="color: red;">
+                    <%= error_msg %>
+                </div>
+                <% } %>
+                    <div class="form-group">
+                        <input type="email" class="form-control" name="email" id="email" placeholder="Enter email"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" id="password"
+                            placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="loginBtn">Login</button>
+
+                    <!-- Forgot Password and Signup Links -->
+                    <div class="text-center mt-3">
+                        <a href="#">Forgot password?</a>
+                        <br>
+                        <a href="/user/login">Are you a user?login here</a>
+                    </div>
+        </form>
+
+
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

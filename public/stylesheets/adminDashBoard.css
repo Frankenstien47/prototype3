@@ -1,0 +1,82 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+
+
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-header {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    border-bottom: none;
+}
+
+.content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.stats .col-md-4 {
+    margin-bottom: 20px;
+}
+
+/* Navbar logo */
+.navbar-brand img {
+    width: 40px;
+    height: 40px;
+}
+
+.navbar {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+}
+
+/* Sidebar */
+
+
+
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    /* Same as sidebar width */
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+    /* Allows scrolling for long content */
+}
+
+.content h1 {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.row.stats .card {
+    margin: 10px 0;
+}
+
+.card-header {
+    font-size: 18px;
+}
